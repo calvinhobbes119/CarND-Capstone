@@ -28,7 +28,7 @@ class TLDetector(object):
         self.waypoint_tree = None
         self.state = TrafficLight.UNKNOWN
         self.last_state = TrafficLight.UNKNOWN
-        self.camera_subsample_factor = 4
+        self.camera_subsample_factor = 6
         self.camera_frame_counter = 0
         self.last_wp = -1
         self.state_count = 0
