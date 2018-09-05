@@ -24,7 +24,8 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 30 # Number of waypoints we will publish. You can change this number
-MAX_DECEL = .1 # Max deceleraton TBD
+LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL = 150 # Number of waypoints ahead we will inspect for traffic signals (not planning)
+MAX_DECEL = .5 # Max deceleraton TBD
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -37,6 +38,7 @@ class WaypointUpdater(object):
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
+        self.distance_to_stopline_pub = rospy.Publisher('/distance_to_stopline', Int32, queue_size=1)
 
         # TODO: Add other member variables you need below
         self.pose = None
@@ -93,22 +95,33 @@ class WaypointUpdater(object):
            base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
         else:
            base_waypoints = self.base_waypoints.waypoints[closest_idx:len(self.waypoints_2d)-1]
-           base_waypoints.extend(self.base_waypoints.waypoints[0:LOOKAHEAD_WPS - (len(self.waypoints_2d) - closest_idx) - 1])
+           farthest_idx = LOOKAHEAD_WPS - (len(self.waypoints_2d) - closest_idx) - 1
+           base_waypoints.extend(self.base_waypoints.waypoints[0:farthest_idx])
 
-        if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
+        if closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - 1 < len(self.waypoints_2d):
+           farthest_idx_for_traffic_signal_detection =  closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - 1
+           wrap_around = False
+        else:
+           farthest_idx_for_traffic_signal_detection =  LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - (len(self.waypoints_2d) - closest_idx) - 1
+           wrap_around = True
+
+        if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx_for_traffic_signal_detection) or \
+           (wrap_around == False and self.stopline_wp_idx < LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL):
             lane.waypoints = base_waypoints
         else:
-            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
+            lane.waypoints = self.decelerate_waypoints(base_waypoints, self.base_waypoints.waypoints, closest_idx)
         return lane
 
-    def decelerate_waypoints(self, waypoints, closest_idx):
+    def decelerate_waypoints(self, waypoints_partial, waypoints_full, closest_idx):
         temp = []
-        for i, wp in enumerate(waypoints):
+        stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0) # Two waypoints back from line so front of the car stops at given line
+        self.distance_to_stopline_pub.publish(stop_idx)
+        for i, wp in enumerate(waypoints_partial):
             p = Waypoint()
             p.pose = wp.pose
-            stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0) # Two waypoints back from line so front of the car stops at given line
-            dist = self.distance(waypoints, i, stop_idx)
+            dist = self.distance(waypoints_full, i, stop_idx)
             vel = math.sqrt(2 * MAX_DECEL * dist)
+            #vel = MAX_DECEL * dist
             if vel < 1.:
                 vel = 0. 
             p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x) # Make sure the top speed is limited

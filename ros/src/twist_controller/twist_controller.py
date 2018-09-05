@@ -17,9 +17,7 @@ class Controller(object):
         ki = 0.1
         kd = 0.
         mn = 0.
-        mx = 0.2
-        self.throttle_controller = PID(kp, ki, kd, mn, mx)
-        
+        mx = 0.15
         tau = 0.5
         ts = 0.02
         self.vel_lpf = LowPassFilter(tau, ts)
@@ -30,17 +28,21 @@ class Controller(object):
         self.decel_limit = decel_limit
         self.accel_limit = accel_limit
         self.wheel_radius = wheel_radius
-        
+
+        self.throttle_controller = PID(kp, ki, kd, mn, mx)
+        self.brake_controller = PID(10.0, ki, kd, mn, abs(self.decel_limit)*self.vehicle_mass*self.wheel_radius)
+               
         self.last_time = rospy.get_time()
         
         
 
-    def control(self, current_vel, angular_vel, linear_vel,  dbw_enabled):
+    def control(self, current_vel, angular_vel, linear_vel,  dbw_enabled, distance_to_stopline):
         # TODO: Change the arg, kwarg list to suit your needs
         # Return throttle, brake, steer
         
         if not dbw_enabled:
            self.throttle_controller.reset()
+           self.brake_controller.reset()
            return 0., 0., 0.
         
         current_vel = self.vel_lpf.filt(current_vel)
@@ -57,13 +59,13 @@ class Controller(object):
         throttle = self.throttle_controller.step(vel_error, sample_time)
         brake = 0.
         
-        if linear_vel == 0. and current_vel < 0.001:
+        if linear_vel == 0 and distance_to_stopline < 2: #current_vel < 0.1: :
            throttle = 0
            brake = 400
-        elif throttle < 0.01 and vel_error < 0:
+        elif throttle < 0.1 and vel_error < 0:
         #elif vel_error < 0:
            throttle = 0
            decel = max(vel_error, self.decel_limit)
-           brake = abs(decel)*self.vehicle_mass*self.wheel_radius
+           brake = abs(decel)*self.vehicle_mass*self.wheel_radius #self.brake_controller.step(abs(current_vel), sample_time) # # #
            
         return throttle, brake, steering

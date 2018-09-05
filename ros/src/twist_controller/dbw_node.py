@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int32
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
 from geometry_msgs.msg import TwistStamped
 import math
@@ -74,11 +74,13 @@ class DBWNode(object):
         self.angular_vel = None
         self.throttle = self.steering = self.brake = 0
         self.dbw_enabled = False
+        self.distance_to_stopline = None
         
         # TODO: Subscribe to all the topics you need to
         rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_cb)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.twist_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.velocity_cb)
+        rospy.Subscriber('/distance_to_stopline', Int32, self.stopline_cb)
         
         self.loop()
 
@@ -91,10 +93,11 @@ class DBWNode(object):
                self.throttle, self.brake, self.steering = self.controller.control(self.current_vel,
                                                                                   self.angular_vel,
                                                                                   self.linear_vel,
-                                                                                  self.dbw_enabled)
+                                                                                  self.dbw_enabled,
+                                                                                  self.distance_to_stopline)
             if self.dbw_enabled:
-               rospy.logdebug('Linear Vel:%6.6f. Angular Vel:%6.6f.',self.linear_vel, self.angular_vel)
-               rospy.logdebug('Throttle:%6.6f. Brake:%6.6f. Steering:%6.6f',self.throttle, self.brake, self.steering)
+               #rospy.logdebug('Linear Vel:%6.6f. Angular Vel:%6.6f.',self.linear_vel, self.angular_vel)
+               #rospy.logdebug('Throttle:%6.6f. Brake:%6.6f. Steering:%6.6f',self.throttle, self.brake, self.steering)
                self.publish(self.throttle, self.brake, self.steering)
             rate.sleep()
 
@@ -107,6 +110,10 @@ class DBWNode(object):
     
     def velocity_cb(self, msg):
        self.current_vel = msg.twist.linear.x
+
+    def stopline_cb(self, msg):
+       self.distance_to_stopline = msg.data
+       rospy.logdebug('distance_to_stopline:%d ', self.distance_to_stopline)
 
     def publish(self, throttle, brake, steer):
         tcmd = ThrottleCmd()
