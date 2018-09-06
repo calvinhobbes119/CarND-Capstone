@@ -5,8 +5,11 @@ import rospy
 import cv2
 
 class TLClassifier(object):
-    def __init__(self):
-        PATH_TO_MODEL = 'frozen_inference_graph.pb'
+    def __init__(self, is_site):
+        if is_site:
+            PATH_TO_MODEL = 'frozen_inference_graph_site.pb'
+        else:
+            PATH_TO_MODEL = 'frozen_inference_graph_sim.pb'
         self.detection_graph = tf.Graph()
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()

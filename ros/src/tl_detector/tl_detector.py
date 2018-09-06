@@ -40,6 +40,7 @@ class TLDetector(object):
         self.listener = tf.TransformListener()
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
+        self.is_site = self.config['is_site']
 
         '''
         /vehicle/traffic_lights provides you with the location of the traffic light in 3D map space and
@@ -57,7 +58,7 @@ class TLDetector(object):
         self.camera_image_publisher = rospy.Publisher('/image_debug', Image, queue_size=1)
         self.traffic_signal_color_pub = rospy.Publisher('/signal_color', UInt8, queue_size=1)
 
-        self.light_classifier = TLClassifier()
+        self.light_classifier = TLClassifier(self.is_site)
         
         rospy.spin()
 
@@ -186,28 +187,30 @@ class TLDetector(object):
         if(self.pose):
             self.car_wp_idx = self.get_closest_waypoint(self.pose.pose.position.x, self.pose.pose.position.y)
 
-        #TODO find the closest visible traffic light (if one exists)
-        diff = len(self.waypoints.waypoints)
-        for i, light in enumerate(self.lights):
-            # Get stop line waypoint_index
-            line = stop_line_positions[i]
-            temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
-            # Find closest stop line waypoint index
-            d = temp_wp_idx - self.car_wp_idx
-            if d >= 0 and d < diff:
-                diff = d
-                closest_light = light
-                line_wp_idx = temp_wp_idx
+            #TODO find the closest visible traffic light (if one exists)
+            diff = len(self.waypoints.waypoints)
+            for i, light in enumerate(self.lights):
+                # Get stop line waypoint_index
+                line = stop_line_positions[i]
+                temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
+                # Find closest stop line waypoint index
+                d = temp_wp_idx - self.car_wp_idx
+                if d >= 0 and d < diff:
+                    diff = d
+                    closest_light = light
+                    line_wp_idx = temp_wp_idx
 
-        if closest_light:
-            state = self.get_light_state(closest_light)
-            self.last_known_line_wp_idx = line_wp_idx
-            self.last_known_state = state
-            return line_wp_idx, state
+            if closest_light:
+                state = self.get_light_state(closest_light)
+                self.last_known_line_wp_idx = line_wp_idx
+                self.last_known_state = state
+                return line_wp_idx, state
 
-        self.last_known_line_wp_idx = -1
-        self.last_known_state =  TrafficLight.UNKNOWN
-        return -1, TrafficLight.UNKNOWN
+ 	if self.is_site:
+            self.last_known_state =  self.get_light_state(0)
+        else:
+            self.last_known_state =  TrafficLight.UNKNOWN
+        return self.last_known_line_wp_idx, self.last_known_state
 
 if __name__ == '__main__':
     try:
