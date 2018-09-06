@@ -9,7 +9,7 @@ ONE_MPH = 0.44704
 
 class Controller(object):
     def __init__(self, vehicle_mass, fuel_capacity, brake_deadband, decel_limit,
-                 accel_limit, wheel_radius, wheel_base, steer_ratio, max_lat_accel, max_steer_angle):
+                 accel_limit, wheel_radius, wheel_base, steer_ratio, max_lat_accel, max_steer_angle, stopping_torque):
         # TODO: Implement
         self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
         
@@ -28,6 +28,7 @@ class Controller(object):
         self.decel_limit = decel_limit
         self.accel_limit = accel_limit
         self.wheel_radius = wheel_radius
+        self.stopping_torque = stopping_torque
 
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
         self.brake_controller = PID(10.0, ki, kd, mn, abs(self.decel_limit)*self.vehicle_mass*self.wheel_radius)
@@ -61,7 +62,7 @@ class Controller(object):
         
         if linear_vel == 0 and distance_to_stopline is not None and distance_to_stopline < 2: #current_vel < 0.1: :
            throttle = 0
-           brake = 400
+           brake = self.stopping_torque
         elif throttle < 0.1 and vel_error < -1.0:
         #elif vel_error < 0:
            throttle = 0
