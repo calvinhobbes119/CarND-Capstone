@@ -43,7 +43,7 @@ class Controller(object):
         if not dbw_enabled:
            self.throttle_controller.reset()
            self.brake_controller.reset()
-           return 0., 0., 0.
+           return 0., 0., 0., 0.
         
         current_vel = self.vel_lpf.filt(current_vel)
         
@@ -59,13 +59,13 @@ class Controller(object):
         throttle = self.throttle_controller.step(vel_error, sample_time)
         brake = 0.
         
-        if linear_vel == 0 and distance_to_stopline < 2: #current_vel < 0.1: :
+        if linear_vel == 0 and distance_to_stopline is not None and distance_to_stopline < 2: #current_vel < 0.1: :
            throttle = 0
            brake = 400
-        elif throttle < 0.1 and vel_error < 0:
+        elif throttle < 0.1 and vel_error < -1.0:
         #elif vel_error < 0:
            throttle = 0
            decel = max(vel_error, self.decel_limit)
            brake = abs(decel)*self.vehicle_mass*self.wheel_radius #self.brake_controller.step(abs(current_vel), sample_time) # # #
            
-        return throttle, brake, steering
+        return throttle, brake, steering, vel_error

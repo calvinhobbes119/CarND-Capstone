@@ -30,7 +30,7 @@ import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-DEQUEU_MAX_LEN = 50
+DEQUEU_MAX_LEN = 400
 
 matplotlib.use('Qt5Agg')
 
@@ -87,6 +87,11 @@ class Visualization(QtWidgets.QWidget):
         self.brake_rep_deq_t = deque([], maxlen=DEQUEU_MAX_LEN*5)
         rospy.Subscriber('/vehicle/brake_report', Float, self.brake_rep_cb, queue_size=1)
 
+        self.vel_error = None
+        self.vel_error_deq = deque([], maxlen=DEQUEU_MAX_LEN*5)
+        self.vel_error_rep_deq_t = deque([], maxlen=DEQUEU_MAX_LEN*5)
+        rospy.Subscriber('/vehicle/vel_error', Float, self.vel_error_cb, queue_size=1)
+
         self.lights = None
         rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb, queue_size=1)
 
@@ -129,17 +134,20 @@ class Visualization(QtWidgets.QWidget):
         """
         self.figure = Figure()
 
-        self.throttle_axes = self.figure.add_subplot(311)
+        self.throttle_axes = self.figure.add_subplot(411)
         self.throttle_axes.grid(True)
 
-        self.brake_axes = self.figure.add_subplot(312, sharex=self.throttle_axes)
+        self.brake_axes = self.figure.add_subplot(412, sharex=self.throttle_axes)
         self.brake_axes.grid(True)
 
         #self.steer_axes = self.figure.add_subplot(413, sharex=self.throttle_axes)
         #self.steer_axes.grid(True)
 
-        self.speed_axes = self.figure.add_subplot(313, sharex=self.throttle_axes)
+        self.speed_axes = self.figure.add_subplot(413, sharex=self.throttle_axes)
         self.speed_axes.grid(True)
+
+        self.vel_error_axes = self.figure.add_subplot(414, sharex=self.throttle_axes)
+        self.vel_error_axes.grid(True)
 
         self.canvas = FigureCanvas(self.figure)
         layout = QtWidgets.QVBoxLayout()
@@ -197,8 +205,18 @@ class Visualization(QtWidgets.QWidget):
         self.speed_axes.set_ylim(0, 10.)
         self.speed_axes.grid(True)
         self.speed_axes.plot(self.steering_rep_deq_t, self.steering_rep_speed_deq, 'b', alpha=0.5)
+        #self.brake_axes.plot(self.steering_rep_deq_t, self.vel_error_deq, 'r', alpha=0.5)
         self.speed_axes.set_ylabel("Speed m/s", fontsize=12)
         self.speed_axes.set_xlabel("Time (s)", fontsize=12)
+
+        self.vel_error_axes.clear()
+        self.vel_error_axes.set_ylim(-3., 3.)
+        self.vel_error_axes.grid(True)
+        #self.speed_axes.plot(self.steering_rep_deq_t, self.steering_rep_speed_deq, 'b', alpha=0.5)
+        self.vel_error_axes.plot(self.vel_error_rep_deq_t, self.vel_error_deq, 'r', alpha=0.5)
+        self.vel_error_axes.set_ylabel("Vel Error m/s", fontsize=12)
+        self.vel_error_axes.set_xlabel("Time (s)", fontsize=12)
+
 
         self.canvas.draw()
 
@@ -416,6 +434,16 @@ class Visualization(QtWidgets.QWidget):
         self.steering_cmd_deq_t.append(timer()-self.start_time)
         self.steering_cmd_deq.append(self.steering_cmd)
 
+    def vel_error_cb(self, msg):
+        """
+        Callback for /vehicle/vel_error
+        :param msg:
+        :return:
+        """
+        self.vel_error = msg.data
+        self.vel_error_deq.append(self.vel_error)
+        self.vel_error_rep_deq_t.append(timer()-self.start_time)
+      
     def steering_rep_cb(self, msg):
         """
         Callback for /vehicle/steering_cmd

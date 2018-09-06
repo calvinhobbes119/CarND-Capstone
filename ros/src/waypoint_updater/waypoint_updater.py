@@ -92,17 +92,17 @@ class WaypointUpdater(object):
         closest_idx = self.get_closest_waypoint_idx()
         if closest_idx + LOOKAHEAD_WPS - 1 < len(self.waypoints_2d):
            farthest_idx = closest_idx + LOOKAHEAD_WPS - 1
-           base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
+           base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx+1]
         else:
-           base_waypoints = self.base_waypoints.waypoints[closest_idx:len(self.waypoints_2d)-1]
+           base_waypoints = self.base_waypoints.waypoints[closest_idx:len(self.waypoints_2d)]
            farthest_idx = LOOKAHEAD_WPS - (len(self.waypoints_2d) - closest_idx) - 1
-           base_waypoints.extend(self.base_waypoints.waypoints[0:farthest_idx])
+           base_waypoints.extend(self.base_waypoints.waypoints[0:farthest_idx+1])
 
-        if closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - 1 < len(self.waypoints_2d):
-           farthest_idx_for_traffic_signal_detection =  closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - 1
+        if closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL <= len(self.waypoints_2d):
+           farthest_idx_for_traffic_signal_detection =  closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL
            wrap_around = False
         else:
-           farthest_idx_for_traffic_signal_detection =  LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - (len(self.waypoints_2d) - closest_idx) - 1
+           farthest_idx_for_traffic_signal_detection =  LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - (len(self.waypoints_2d) - closest_idx)
            wrap_around = True
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx_for_traffic_signal_detection) or \
