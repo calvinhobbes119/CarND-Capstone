@@ -13,7 +13,7 @@ import tf
 import cv2
 import yaml
 
-STATE_COUNT_THRESHOLD = 1
+STATE_COUNT_THRESHOLD = 3
 BRAKING_DISTANCE_IN_NUM_WAYPOINTS = 100
 
 class TLDetector(object):
