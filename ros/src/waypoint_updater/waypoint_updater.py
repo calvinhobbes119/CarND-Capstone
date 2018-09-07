@@ -23,8 +23,6 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 30 # Number of waypoints we will publish. You can change this number
-LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL = 150 # Number of waypoints ahead we will inspect for traffic signals (not planning)
 MAX_DECEL = .5 # Max deceleraton TBD
 
 class WaypointUpdater(object):
@@ -33,6 +31,8 @@ class WaypointUpdater(object):
 
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        rospy.Subscriber('/lookahead_wps', Int32, self.lookahead_wps_cb)
+        rospy.Subscriber('/lookahead_wps_for_traffic_signal', Int32, self.lookahead_wps_for_traffic_signal_cb)
         rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
@@ -43,6 +43,8 @@ class WaypointUpdater(object):
         # TODO: Add other member variables you need below
         self.pose = None
         self.base_waypoints = None
+        self.lookahead_wps = None
+        self.lookahead_wps_for_traffic_signal = None
         self.waypoints_2d = None
         self.waypoint_tree = None
         self.stopline_wp_idx = -1
@@ -52,7 +54,7 @@ class WaypointUpdater(object):
     def loop(self):
        rate = rospy.Rate(25)
        while not rospy.is_shutdown():
-          if self.pose and self.base_waypoints:
+          if self.pose and self.base_waypoints and self.lookahead_wps and self.lookahead_wps_for_traffic_signal:
              # Get closest waypoint
              closest_waypoint_idx = self.get_closest_waypoint_idx()
              self.publish_waypoints(closest_waypoint_idx)
@@ -90,23 +92,23 @@ class WaypointUpdater(object):
         lane = Lane()
 
         closest_idx = self.get_closest_waypoint_idx()
-        if closest_idx + LOOKAHEAD_WPS - 1 < len(self.waypoints_2d):
-           farthest_idx = closest_idx + LOOKAHEAD_WPS - 1
+        if closest_idx + self.lookahead_wps - 1 < len(self.waypoints_2d):
+           farthest_idx = closest_idx + self.lookahead_wps - 1
            base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx+1]
         else:
            base_waypoints = self.base_waypoints.waypoints[closest_idx:len(self.waypoints_2d)]
-           farthest_idx = LOOKAHEAD_WPS - (len(self.waypoints_2d) - closest_idx) - 1
+           farthest_idx = self.lookahead_wps - (len(self.waypoints_2d) - closest_idx) - 1
            base_waypoints.extend(self.base_waypoints.waypoints[0:farthest_idx+1])
 
-        if closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL <= len(self.waypoints_2d):
-           farthest_idx_for_traffic_signal_detection =  closest_idx + LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL
+        if closest_idx + self.lookahead_wps_for_traffic_signal <= len(self.waypoints_2d):
+           farthest_idx_for_traffic_signal_detection =  closest_idx + self.lookahead_wps_for_traffic_signal
            wrap_around = False
         else:
-           farthest_idx_for_traffic_signal_detection =  LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL - (len(self.waypoints_2d) - closest_idx)
+           farthest_idx_for_traffic_signal_detection =  self.lookahead_wps_for_traffic_signal - (len(self.waypoints_2d) - closest_idx)
            wrap_around = True
 
         if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx_for_traffic_signal_detection) or \
-           (wrap_around == False and self.stopline_wp_idx < LOOKAHEAD_WPS_FOR_TRAFFIC_SIGNAL):
+           (wrap_around == False and self.stopline_wp_idx < self.lookahead_wps_for_traffic_signal):
             lane.waypoints = base_waypoints
         else:
             lane.waypoints = self.decelerate_waypoints(base_waypoints, self.base_waypoints.waypoints, closest_idx)
@@ -139,6 +141,13 @@ class WaypointUpdater(object):
            self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
            self.waypoint_tree = KDTree(self.waypoints_2d)
         
+    def lookahead_wps_cb(self, msg):
+        # Number of waypoints we will publish. You can change this number
+        self.lookahead_wps = msg.data
+
+    def lookahead_wps_for_traffic_signal_cb(self, msg):
+        # Number of waypoints ahead we will inspect for traffic signals (not planning)
+        self.lookahead_wps_for_traffic_signal = msg.data
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement

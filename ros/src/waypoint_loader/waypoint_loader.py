@@ -5,7 +5,7 @@ import csv
 import math
 
 from geometry_msgs.msg import Quaternion
-
+from std_msgs.msg import Int32
 from styx_msgs.msg import Lane, Waypoint
 
 import tf
@@ -21,9 +21,13 @@ class WaypointLoader(object):
         rospy.init_node('waypoint_loader', log_level=rospy.DEBUG)
 
         self.pub = rospy.Publisher('/base_waypoints', Lane, queue_size=1, latch=True)
+        self.lookahead_wps_pub = rospy.Publisher('/lookahead_wps', Int32, queue_size=1, latch=True)
+        self.lookahead_wps_for_traffic_signal_pub = rospy.Publisher('/lookahead_wps_for_traffic_signal', Int32, queue_size=1, latch=True)
 
         self.velocity = self.kmph2mps(rospy.get_param('~velocity'))
         self.new_waypoint_loader(rospy.get_param('~path'))
+        self.lookahead_wps_pub.publish(rospy.get_param('~lookahead_wps'))
+        self.lookahead_wps_for_traffic_signal_pub.publish(rospy.get_param('~lookahead_wps_for_traffic_signal'))
         rospy.spin()
 
     def new_waypoint_loader(self, path):
