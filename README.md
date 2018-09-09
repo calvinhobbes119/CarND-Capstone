@@ -15,17 +15,18 @@ For SDC Capstone project, we have enhanhced the code from the Udacity provided b
 No changes.
 #### Traffic Light Detection
 TODO
+Link : https://github.com/alejandrods/Tensorflow_API_traffic_light_detection/blob/master/object_detection_tutorial.ipynb
 
 ### Planning
 #### Waypoint Loader
 No changes.
 
 #### Waypoint Updater
-TODO
+TODO : Vinod
  
 ### Control
 #### DBW
-TODO
+TODO : Vinod
  
 #### Waypoint follower
 No chnages.
