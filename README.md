@@ -1,3 +1,28 @@
+# The Swift
+### Swift Team
+* Tom Odwald: 
+* Vinod Radhakrishnan: 
+* Alex Santos: alejandro.diaz.santos@gmail.com
+* Elias Zimmermann: elias.zimmermann@rafi.de
+* Anup Nayak: anup.nayak@gmail.com
+
+
+## Introduction
+For SDC Capstone project, we have enhanhced the code from the Udacity provided baseline. We improvemented in all 3 logical subsystems - (1) Perception, (2) Planning, and (3) Control. As a whole we improved traffic light detection, planning the course of action, and automatic control of the vehicle. The following subsections will detail the improvements for each category.
+
+### Perception
+
+### Planning
+
+### Control
+
+## Usage
+### On the simulator
+
+### On the site
+
+# Original
+
 This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
 
 Please use **one** of the two installation options, either native **or** docker installation.
