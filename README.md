@@ -11,15 +11,65 @@
 For SDC Capstone project, we have enhanhced the code from the Udacity provided baseline. We improvemented in all 3 logical subsystems - (1) Perception, (2) Planning, and (3) Control. As a whole we improved traffic light detection, planning the course of action, and automatic control of the vehicle. The following subsections will detail the improvements for each category.
 
 ### Perception
+#### Obstacle Detection
+No changes.
+#### Traffic Light Detection
+TODO
 
 ### Planning
+#### Waypoint Loader
+No changes.
 
+#### Waypoint Updater
+TODO
+ 
 ### Control
+#### DBW
+TODO
+ 
+#### Waypoint follower
+No chnages.
 
-## Usage
-### On the simulator
+### Usage
 
-### On the site
+1. Clone the project repository
+```bash
+git clone https://github.com/AnupNayakGitHub/CarND-Capstone
+```
+
+2. Install python dependencies
+```bash
+cd CarND-Capstone
+pip install -r requirements.txt
+```
+3. Make and run styx
+```bash
+cd ros
+catkin_make
+source devel/setup.sh
+roslaunch launch/styx.launch
+```
+4. Run the simulator
+
+### Real world testing
+1. Download [training bag](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/traffic_light_bag_file.zip) that was recorded on the Udacity self-driving car.
+```bash
+wget https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/traffic_light_bag_file.zip
+```
+2. Unzip the file
+```bash
+unzip traffic_light_bag_file.zip
+```
+3. Play the bag file
+```bash
+rosbag play -l traffic_light_bag_file/traffic_light_training.bag
+```
+4. Launch your project in site mode
+```bash
+cd CarND-Capstone/ros
+roslaunch launch/site.launch
+```
+5. Confirm that traffic light detection works on real life images
 
 ## Conclusion
 We took the opportunity to build a small team working from different time zone. Our approach was for each team member to learn from every part of change and improvement. We periodically identified next set of improvements and each member to work on identifed improvements. At the same time, periodically reviewed the recent improvements and merged to retain the best solution. This excercise exposed each of us to all parts of the project.
