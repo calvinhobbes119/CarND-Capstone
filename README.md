@@ -1,6 +1,6 @@
 # The Swift
 ### Swift Team
-* Tom Odwald: 
+* Tom Odwald: Tomasz.Odwald@gmail.com
 * Vinod Radhakrishnan: vinod_rad@yahoo.com
 * Alex Santos: alejandro.diaz.santos@gmail.com
 * Elias Zimmermann: elias.zimmermann@rafi.de
