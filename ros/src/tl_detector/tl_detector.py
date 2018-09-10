@@ -87,7 +87,6 @@ class TLDetector(object):
         self.camera_image = msg
         self.camera_frame_counter = ((self.camera_frame_counter + 1) % self.camera_subsample_factor)
         
-        #light_wp, state = self.process_traffic_lights()
         if (self.camera_frame_counter == 0):
             light_wp, state = self.process_traffic_lights()
         else:
@@ -208,8 +207,10 @@ class TLDetector(object):
 
  	if self.is_site:
             self.last_known_state =  self.get_light_state(0)
+            self.last_known_line_wp_idx = -1
         else:
             self.last_known_state =  TrafficLight.UNKNOWN
+            self.last_known_line_wp_idx = -1
         return self.last_known_line_wp_idx, self.last_known_state
 
 if __name__ == '__main__':
