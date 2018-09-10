@@ -60,7 +60,7 @@ class Controller(object):
         throttle = self.throttle_controller.step(vel_error, sample_time)
         brake = 0.
         
-        if linear_vel == 0 and distance_to_stopline is not None and distance_to_stopline < 2: #current_vel < 0.1: :
+        if linear_vel == 0 and distance_to_stopline is not None and distance_to_stopline < 3: #current_vel < 0.1: :
            throttle = 0
            brake = self.stopping_torque
         elif throttle < 0.1 and vel_error < -1.0:
