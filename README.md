@@ -12,7 +12,7 @@ Goal of this project named "Capstone" is to provide a system which integrates mu
 
 Therefore we have enhanhced the code from the Udacity provided baseline. We improvemented in all 3 logical subsystems - (1) Perception, (2) Planning, and (3) Control. As a whole we improved traffic light detection, planning the course of action, and automatic control of the vehicle. The following subsections will detail the improvements for each category.
 
-[TODO: Add system architecture diagram from System Integration Project lesson, concept nr. 4]
+![Sytem Architecture](./system_architecture.png "Sysetem Architecture")
 
 
 ### Perception
