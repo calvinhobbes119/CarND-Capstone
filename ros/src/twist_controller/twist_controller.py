@@ -17,7 +17,7 @@ class Controller(object):
         ki = 0.1
         kd = 0.
         mn = 0.
-        mx = 0.15
+        mx = rospy.get_param('~throttle_max', 0.2)
         tau = 0.5
         ts = 0.02
         self.vel_lpf = LowPassFilter(tau, ts)

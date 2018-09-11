@@ -12,5 +12,6 @@
         <param name="max_lat_accel" value="3." />
         <param name="max_steer_angle" value="8." />
         <param name="stopping_torque" value="400."/>
+        <param name="throttle_max" value="0.22"/>
     </node>
 </launch>
