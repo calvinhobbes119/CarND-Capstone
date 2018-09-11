@@ -41,7 +41,11 @@ We updated the waypoint loader launch file to specify the number of waypoints pu
 1. For the site track, we use 10 waypoints for both publishing to the waypoint-follower node, and as lookahead for Traffic Lights.
 
 #### Waypoint Updater
-TODO : Vinod
+
+The waypoint updater node is responsible for publishing the list of waypoints (including position and velocity) to the waypoint_follower node at a periodic rate of 25Hz. Having too many waypoints can increase the computation burden which results in latency issues, whereas having too few waypoints can lead to jerky deceleration when a traffic light turns yellow or red. To overcome this, we only publish 30 waypoints (in the case of the simulated track), however the velocity profile is computed based on a much longer time frame of 125 waypoints so we can detect changing traffic lights in a timely manner and provide a smooth deceleration response. This is shown in the picture below.
+
+![waypoint_updater.png](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Waypoint_Updater.png)
+
  
 ### Control
 #### DBW
