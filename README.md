@@ -29,7 +29,7 @@ For the traffic light detection there are two steps needed:
 2. Classification of the traffic light. 
 We decided to create a single shot detector including both steps in one.
 
-The resulting model is based on the Tensorflow API. A pretrained object detection model named 'ssd_mobilenet_v1_coco' is provided in this API. Using the Bosch Small Traffic Lights Dataset the model is trained to fullfil our requirements for the test track. To test the source code on a simulator a further model is provided which used the Udacity Simulator based traffic light data to train it.
+The resulting model is based on the Tensorflow API. A pretrained object detection model named 'ssd_mobilenet_v1_coco' is provided in this API. Using the Bosch Small Traffic Lights Dataset the model is trained to fullfil our requirements for the test track. To test the source code on a simulator a further model is provided which used the Udacity Simulator based traffic light data to train it. In addition, to minimize some latency issues we were having, we only process every 6th image frame for traffic lights.
 
 A link to this work is provided [here]( https://github.com/alejandrods/Tensorflow_API_traffic_light_detection/blob/master/object_detection_tutorial.ipynb).
 
@@ -42,14 +42,15 @@ We updated the waypoint loader launch file to specify the number of waypoints pu
 
 #### Waypoint Updater
 
-The waypoint updater node is responsible for publishing the list of waypoints (including position and velocity) to the waypoint_follower node at a periodic rate of 25Hz. Having too many waypoints can increase the computation burden which results in latency issues, whereas having too few waypoints can lead to jerky deceleration when a traffic light turns yellow or red. To overcome this, we only publish 30 waypoints to the waypoint-follower node at any given time in the case of the simulated track. However the velocity profile is computed based on a much longer time frame of 125 waypoints so we can detect changing traffic lights in a timely manner and provide a smooth deceleration response. This is shown in the picture below.
+The waypoint updater node is responsible for calculating and publishing the list of waypoints which includes position and linear/angular velocity to the waypoint_follower node at a periodic rate of 25Hz. Having too many waypoints can increase the computation burden which results in latency issues. On the other hand, having too few waypoints can lead to jerky deceleration when a traffic light turns yellow or red. To overcome this, we only publish 30 waypoints to the waypoint-follower node at any given time in the case of the simulated track. However the velocity profile is computed based on a much longer time frame of 125 waypoints so we can detect changing traffic lights in a timely manner and provide a smooth deceleration response. This is shown in the picture below.
 
 ![waypoint_updater.png](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Waypoint_Updater.png)
 
- 
 ### Control
-#### DBW
-TODO : Vinod
+#### Drive-By-Wire (DBW) Node 
+We experimented with different settings for the PID parameters for smooth acceleration response, as well as with the max deceleration parameter to provide smooth stopping behavior. We also updated the Drive-By-Wire (DBW) node to use the distance to the stopline for a traffic-light to decide when to apply maximum braking torque. The following video shows the performance of the car in the Simulator track, as well as some parameters we monitor to ensure that jerk is kept to a minimum.
+
+
  
 #### Waypoint follower
 No chnages.
