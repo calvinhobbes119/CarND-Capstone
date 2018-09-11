@@ -53,7 +53,7 @@ We experimented with different settings for the PID parameters for smooth accele
 [![Capstone Simulator Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Simulator.png)](https://youtu.be/ZpW9HxBtKtc)
  
 #### Waypoint follower
-No chnages.
+No changes were made to this module.
 
 ### Usage
 
