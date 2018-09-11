@@ -8,23 +8,26 @@
 
 
 ## Introduction
-Goal of this project named "Capstone" is to provide a system which integrates multiple components to drive the Udacity self-driving car "Carla" around a test track.
+The goal of this Capstone project was to provide a system which integrates multiple components to drive the Udacity self-driving car "Carla" around a test track.
 
-Therefore we have enhanhced the code from the Udacity provided baseline. We improvemented in all 3 logical subsystems - (1) Perception, (2) Planning, and (3) Control. As a whole we improved traffic light detection, planning the course of action, and automatic control of the vehicle. The following subsections will detail the improvements for each category.
+To achieve this goal we enhanced the baseline code provided by Udacity and made improvements to all 3 logical subsystems - (1) Perception, by implementing a Deep-Neural Network based traffic light detection algorithm, 
+(2) Planning, by improving the waypoint estimation algorithm to provide responsive and smoooth velocity profiles, and 
+(3) Control, by providing actuator control commands which adhere to the planned waypoints with minimal jerk.
+
+The following subsections will detail the improvements for each category.
 
 ![Sytem Architecture](./system_architecture.png "Sysetem Architecture")
 
 
 ### Perception
 #### Obstacle Detection
-No changes.
+No changes were made to this module.
 #### Traffic Light Detection
 For the traffic light detection there are two steps needed: 1. Detecting a traffic light 2. Classification of the traffic light. We decided to create a single shot detector including both steps in one.
 
 The resulting model is based on the Tensorflow API. A pretrained object detection model named 'ssd_mobilenet_v1_coco' is provided in this API. Using the Bosch Small Traffic Lights Dataset the model is trained to fullfil our requirements for the test track. To test the source code on a simulator a further model is provided which used the Udacity Simulator based traffic light data to train it.
 
-
-Link : https://github.com/alejandrods/Tensorflow_API_traffic_light_detection/blob/master/object_detection_tutorial.ipynb
+A link to this work is provided [here]( https://github.com/alejandrods/Tensorflow_API_traffic_light_detection/blob/master/object_detection_tutorial.ipynb).
 
 ### Planning
 #### Waypoint Loader
