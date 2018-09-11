@@ -10,9 +10,10 @@
 ## Introduction
 The goal of this Capstone project was to provide a system which integrates multiple components to drive the Udacity self-driving car "Carla" around a test track.
 
-To achieve this goal we enhanced the baseline code provided by Udacity and made improvements to all 3 logical subsystems - (1) Perception, by implementing a Deep-Neural Network based traffic light detection algorithm, 
-(2) Planning, by improving the waypoint estimation algorithm to provide responsive and smoooth velocity profiles, and 
-(3) Control, by providing actuator control commands which adhere to the planned waypoints with minimal jerk.
+To achieve this goal we enhanced the baseline code provided by Udacity and made improvements to all 3 logical subsystems -
+1. Perception, by implementing a Deep-Neural Network based traffic light detection algorithm
+2. Planning, by improving the waypoint estimation algorithm to provide responsive and smoooth velocity profiles, and 
+3. Control, by providing actuator control commands which adhere to the planned waypoints with minimal jerk.
 
 The following subsections will detail the improvements for each category.
 
@@ -31,7 +32,10 @@ A link to this work is provided [here]( https://github.com/alejandrods/Tensorflo
 
 ### Planning
 #### Waypoint Loader
-No changes.
+We updated the waypoint loader launch file to specify the number of waypoints published to the waypoint-follower node, as well as the number of waypoints we use to lookahead for traffic lights. After some experimentation, these values are set as follows:
+
+1. For the simulator track, we publish 30 waypoints to the waypoint-follower node, while simultaneously using 125 waypoints of lookahead for Traffic Lights so we can provide a longer response window and smoother deceleration when a yellow or red traffic signal is detected.
+1. For the site track, we use 10 waypoints for both publishing to the waypoint-follower node, and as lookahead for Traffic Lights.
 
 #### Waypoint Updater
 TODO : Vinod
