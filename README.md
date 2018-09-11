@@ -48,9 +48,9 @@ The waypoint updater node is responsible for calculating and publishing the list
 
 ### Control
 #### Drive-By-Wire (DBW) Node 
-We experimented with different settings for the PID parameters for smooth acceleration response, as well as with the max deceleration parameter to provide smooth stopping behavior. We also updated the Drive-By-Wire (DBW) node to use the distance to the stopline for a traffic-light to decide when to apply maximum braking torque. The following video shows the performance of the car in the Simulator track, as well as some parameters we monitor to ensure that jerk is kept to a minimum.
+We experimented with different settings for the PID parameters for smooth acceleration response, as well as with the max deceleration parameter to provide smooth stopping behavior. We also updated the Drive-By-Wire (DBW) node to use the distance to the stopline for a traffic-light to decide when to apply maximum braking torque. The following video shows the performance of the car in the Simulator track, as well as some parameters we monitor to ensure that jerk is kept to a minimum. [NOTE: We built on the debug tool initially developed by Kairos-Automotive team in their project]
 
-[![Capstone Simulator Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/Simulator.png)](https://youtu.be/ZpW9HxBtKtc)
+[![Capstone Simulator Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Simulator.png)](https://youtu.be/ZpW9HxBtKtc)
  
 #### Waypoint follower
 No chnages.
