@@ -52,6 +52,10 @@ We experimented with different settings for the PID parameters for smooth accele
 
 [![Capstone Simulator Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Simulator.png)](https://youtu.be/ZpW9HxBtKtc)
  
+In addition to the simulator, we also ensured that our traffic-light detection system worked with the Rosbag video from the test site. See video of this below.
+[![Rosbag Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Rosbag.png)](https://youtu.be/CoQjcoJY8Us)
+
+
 #### Waypoint follower
 No changes were made to this module.
 
