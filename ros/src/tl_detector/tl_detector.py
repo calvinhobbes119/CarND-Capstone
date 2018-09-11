@@ -49,16 +49,16 @@ class TLDetector(object):
         simulator. When testing on the vehicle, the color state will not be available. You'll need to
         rely on the position of the light and the camera image to predict it.
         '''
-        sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
-        sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
-        sub3 = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
-        sub6 = rospy.Subscriber('/image_color', Image, self.image_cb)
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
-	self.upcoming_light_pub_for_display = rospy.Publisher('/traffic_waypoint_for_display', Int32, queue_size=1)        
+        self.upcoming_light_pub_for_display = rospy.Publisher('/traffic_waypoint_for_display', Int32, queue_size=1)        
         self.camera_image_publisher = rospy.Publisher('/image_debug', Image, queue_size=1)
         self.traffic_signal_color_pub = rospy.Publisher('/signal_color', UInt8, queue_size=1)
 
         self.light_classifier = TLClassifier(self.is_site)
+        sub1 = rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
+        sub2 = rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        sub3 = rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
+        sub6 = rospy.Subscriber('/image_color', Image, self.image_cb)
         
         rospy.spin()
 
@@ -68,7 +68,7 @@ class TLDetector(object):
     def waypoints_cb(self, waypoints):
             # TODO: Implement
             self.waypoints = waypoints
-            if not self.waypoints_2d:
+            if self.waypoints_2d is None:
                 self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
                 self.waypoint_tree = KDTree(self.waypoints_2d)
 
@@ -87,7 +87,8 @@ class TLDetector(object):
         self.camera_image = msg
         self.camera_frame_counter = ((self.camera_frame_counter + 1) % self.camera_subsample_factor)
         
-        if (self.camera_frame_counter == 0):
+        if self.camera_frame_counter == 0 and \
+            self.waypoint_tree is not None:
             light_wp, state = self.process_traffic_lights()
         else:
             light_wp = self.last_known_line_wp_idx
