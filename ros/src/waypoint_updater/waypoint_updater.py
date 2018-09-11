@@ -29,12 +29,6 @@ class WaypointUpdater(object):
     def __init__(self):
         rospy.init_node('waypoint_updater',log_level=rospy.DEBUG)
 
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
-        rospy.Subscriber('/lookahead_wps', Int32, self.lookahead_wps_cb)
-        rospy.Subscriber('/lookahead_wps_for_traffic_signal', Int32, self.lookahead_wps_for_traffic_signal_cb)
-        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
-
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
@@ -49,12 +43,18 @@ class WaypointUpdater(object):
         self.waypoint_tree = None
         self.stopline_wp_idx = -1
 
+        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
+        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        rospy.Subscriber('/lookahead_wps', Int32, self.lookahead_wps_cb)
+        rospy.Subscriber('/lookahead_wps_for_traffic_signal', Int32, self.lookahead_wps_for_traffic_signal_cb)
+        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+
         self.loop()
 
     def loop(self):
        rate = rospy.Rate(25)
        while not rospy.is_shutdown():
-          if self.pose and self.base_waypoints and self.lookahead_wps and self.lookahead_wps_for_traffic_signal:
+          if self.pose is not None and self.waypoint_tree is not None and self.lookahead_wps_for_traffic_signal is not None:
              self.publish_waypoints()
              rate.sleep()
 
@@ -135,7 +135,7 @@ class WaypointUpdater(object):
     def waypoints_cb(self, waypoints):
         # TODO: Implement
         self.base_waypoints = waypoints
-        if not self.waypoints_2d:
+        if self.waypoints_2d is None:
            self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
            self.waypoint_tree = KDTree(self.waypoints_2d)
         
