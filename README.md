@@ -55,6 +55,8 @@ We experimented with different settings for the PID parameters for smooth accele
 In addition to the simulator, we also ensured that our traffic-light detection system worked with the Rosbag video from the test site. See video of this below.
 [![Rosbag Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/Rosbag.png)](https://youtu.be/CoQjcoJY8Us)
 
+Finally, we also verified that our code worked with the simulation of the site track, after reducing the number of waypoints to follow appropriately. See below.
+[![SiteSim Video](https://github.com/calvinhobbes119/CarND-Capstone/blob/master/imgs/SiteSim.png)](https://youtu.be/rgV8qvr6S5s)
 
 #### Waypoint follower
 No changes were made to this module.
