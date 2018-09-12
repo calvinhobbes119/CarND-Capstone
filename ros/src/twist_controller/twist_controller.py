@@ -63,7 +63,7 @@ class Controller(object):
         if linear_vel == 0 and distance_to_stopline is not None and distance_to_stopline < 3: #current_vel < 0.1: :
            throttle = 0
            brake = self.stopping_torque
-        elif throttle < 0.1 and vel_error < -1.0:
+        elif throttle < 0.1 and vel_error < -0.1:
         #elif vel_error < 0:
            throttle = 0
            decel = max(vel_error, self.decel_limit)
