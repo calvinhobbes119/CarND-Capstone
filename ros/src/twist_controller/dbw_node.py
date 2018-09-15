@@ -120,7 +120,7 @@ class DBWNode(object):
        self.distance_to_stopline = msg.data
        rospy.logdebug('distance_to_stopline:%d ', self.distance_to_stopline)
 
-    def publish(self, throttle, brake, steer, self.vel_error):
+    def publish(self, throttle, brake, steer, vel_error):
         tcmd = ThrottleCmd()
         tcmd.enable = True
         tcmd.pedal_cmd_type = ThrottleCmd.CMD_PERCENT
@@ -138,7 +138,7 @@ class DBWNode(object):
         bcmd.pedal_cmd = brake
         self.brake_pub.publish(bcmd)
 
-        self.vel_error_pub.publish(self.vel_error)
+        self.vel_error_pub.publish(vel_error)
 
 
 if __name__ == '__main__':
