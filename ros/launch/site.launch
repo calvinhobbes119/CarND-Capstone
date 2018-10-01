@@ -4,7 +4,14 @@
     <include file="$(find twist_controller)/launch/dbw.launch"/>
 
     <!--Waypoint Loader -->
-    <include file="$(find waypoint_loader)/launch/waypoint_loader_site.launch"/>
+    <!--include file="$(find waypoint_loader)/launch/waypoint_loader_site.launch"/-->
+    <node pkg="waypoint_loader" type="waypoint_loader.py" name="waypoint_loader" output="log">
+        <param name="path" value="$(find styx)../../../data/churchlot_with_cars.csv" />
+        <param name="velocity" value="10" />
+        <param name="lookahead_wps" value="15" />
+        <param name="lookahead_wps_for_traffic_signal" value="15" />
+    </node>
+
 
     <!--Waypoint Follower Node -->
     <include file="$(find waypoint_follower)/launch/pure_pursuit.launch"/>
